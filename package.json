@@ -1,0 +1,15 @@
+{
+  "name": "jtlog_analyze",
+  "description": "node analyze server",
+  "version": "0.0.1",
+  "author": {
+    "name": "vicanso 小墨鱼",
+    "email": "vicansocanbico@gmail.com"
+  },
+  "dependencies": {
+    "jtlogger": "0.0.6",
+    "lodash": "^3.0.0",
+    "require-tree": "^1.0.1",
+    "zmq": "^2.10.0"
+  }
+}
