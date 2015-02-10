@@ -2,9 +2,61 @@
 // '<134>Feb  9 13:18:27 [HAPROXY][3241]: 192.168.2.2:52046 [09/Feb/2015:13:18:27.159] 80port varnish/<NOSRV> 154/-1/-1/-1/155 503 212 - - SC-- 1/1/0/0/0 0/0 {192.168.2.2|} "GET / HTTP/1.1"\n'
 // '<134>Feb  9 13:18:27 [HAPROXY][3241]: 192.168.2.2:52047 [09/Feb/2015:13:18:27.159] 80port varnish/<NOSRV> 295/-1/-1/-1/295 503 212 - - SC-- 0/0/0/0/0 0/0 {192.168.2.2|} "GET /favicon.ico HTTP/1.1"\n'
 
+var client = require('../lib/client');
+
+var moment = require('moment');
 module.exports = function(msg){
-  var reg = /[\s\S]+\[HAPROXY\]\[(\d+)\]\:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):\d{1,5}\s/gi;
-  console.dir(reg.exec(msg));
-  // console.dir(RegExp.$1);
-  // console.dir(msg);
+  // 1: harpoxy pid
+  // 2: client ip
+  // 3: accept date
+  // 4: frontend_name
+  // 5: backend_name
+  // 6: server_name
+  // 7-11: Tq Tw Tc Tr Tt
+  // 12: status_code
+  // 13: bytes_read
+  // 14: cookie eg:vicanso=110ec58a-a0f2-4ac4-8393-c866d813b8d1 or -
+  // 15-19: actconn feconn beconn srv_conn retries
+  // 20-21: srv_queue backend_queue
+  // 22: host
+  // 23: Referer
+  // 24: method
+  // 25: url
+  var reg = /[\s\S]+\[HAPROXY\]\[(\d+?)\]\:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):\d{1,5}\s\[(\S+?)\]\s(\S+?)\s(\S+?)\/(\S+?)\s(\S+?)\/(\S+?)\/(\S+?)\/(\S+?)\/(\S+?)\s(\d+?)\s(\d+?)\s(\S+?)\s[\s\S]*?(\S+?)\/(\S+?)\/(\S+?)\/(\S+?)\/(\S+?)\s(\S+?)\/(\S+?)\s\{([\s\S]*?)\|([\s\S]*?)\}\s\"(\S+?)\s(\S+?)\s/gi;
+  var result = reg.exec(msg);
+  if(result && result.length > 25){
+    var uuidPrefix = 'vicanso=';
+    var uuid = '';
+    if(result[14].indexOf(uuidPrefix) !== -1){
+      uuid = result[14].substring(uuidPrefix.length);
+    }
+    var data = {
+      pid : parseInt(result[1]),
+      clientIP : result[2],
+      date : moment(result[3], 'DD/MMM/YYYY:HH:mm:ss.SSS').format('YYYY-MM-DDTHH:mm:ss.SSS'),
+      frontend : result[4],
+      backend : result[5],
+      server : result[6],
+      tq : parseInt(result[7]),
+      tw : parseInt(result[8]),
+      tc : parseInt(result[9]),
+      tr : parseInt(result[10]),
+      tt : parseInt(result[11]),
+      statusCode : parseInt(result[12]),
+      length : parseInt(result[13]),
+      uuid : uuid,
+      actConn : parseInt(result[15]),
+      feConn : parseInt(result[16]),
+      beConn : parseInt(result[17]),
+      srvConn : parseInt(result[18]),
+      retries : parseInt(result[19]),
+      srvQueue : parseInt(result[20]),
+      backendQueue : parseInt(result[21]),
+      host : result[22],
+      referer : result[23],
+      method : result[24],
+      url : result[25]
+    };
+    console.dir(data);
+  }
 };
