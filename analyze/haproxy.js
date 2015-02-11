@@ -1,11 +1,10 @@
 // '<134>Feb  9 13:16:41 [HAPROXY][3241]: 127.0.0.1:51906 [09/Feb/2015:13:16:41.918] 80port varnish/<NOSRV> 0/-1/-1/-1/0 503 212 vicanso=110ec58a-a0f2-4ac4-8393-c866d813b8d1 - SC-- 0/0/0/0/0 0/0 {localhost|http://localhost:100} "GET / HTTP/1.1"\n'
-// '<134>Feb  9 13:18:27 [HAPROXY][3241]: 192.168.2.2:52046 [09/Feb/2015:13:18:27.159] 80port varnish/<NOSRV> 154/-1/-1/-1/155 503 212 - - SC-- 1/1/0/0/0 0/0 {192.168.2.2|} "GET / HTTP/1.1"\n'
-// '<134>Feb  9 13:18:27 [HAPROXY][3241]: 192.168.2.2:52047 [09/Feb/2015:13:18:27.159] 80port varnish/<NOSRV> 295/-1/-1/-1/295 503 212 - - SC-- 0/0/0/0/0 0/0 {192.168.2.2|} "GET /favicon.ico HTTP/1.1"\n'
 
 var client = require('../lib/client');
 
 var moment = require('moment');
 module.exports = function(msg){
+  console.dir(msg);
   // 1: harpoxy pid
   // 2: client ip
   // 3: accept date
@@ -20,9 +19,10 @@ module.exports = function(msg){
   // 20-21: srv_queue backend_queue
   // 22: host
   // 23: Referer
-  // 24: method
-  // 25: url
-  var reg = /[\s\S]+\[HAPROXY\]\[(\d+?)\]\:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):\d{1,5}\s\[(\S+?)\]\s(\S+?)\s(\S+?)\/(\S+?)\s(\S+?)\/(\S+?)\/(\S+?)\/(\S+?)\/(\S+?)\s(\d+?)\s(\d+?)\s(\S+?)\s[\s\S]*?(\S+?)\/(\S+?)\/(\S+?)\/(\S+?)\/(\S+?)\s(\S+?)\/(\S+?)\s\{([\s\S]*?)\|([\s\S]*?)\}\s\"(\S+?)\s(\S+?)\s/gi;
+  // 24: user-agent
+  // 25: method
+  // 26: url
+  var reg = /[\s\S]+\[HAPROXY\]\[(\d+?)\]\:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):\d{1,5}\s\[(\S+?)\]\s(\S+?)\s(\S+?)\/(\S+?)\s(\S+?)\/(\S+?)\/(\S+?)\/(\S+?)\/(\S+?)\s(\d+?)\s(\d+?)\s(\S+?)\s[\s\S]*?(\S+?)\/(\S+?)\/(\S+?)\/(\S+?)\/(\S+?)\s(\S+?)\/(\S+?)\s\{([\s\S]*?)\|([\s\S]*?)\|([\s\S]*?)\}\s\"(\S+?)\s(\S+?)\s/gi;
   var result = reg.exec(msg);
   if(result && result.length > 25){
     var uuidPrefix = 'vicanso=';
@@ -54,8 +54,9 @@ module.exports = function(msg){
       backendQueue : parseInt(result[21]),
       host : result[22],
       referer : result[23],
-      method : result[24],
-      url : result[25]
+      userAgent : result[24],
+      method : result[25],
+      url : result[26]
     };
     console.dir(data);
   }
