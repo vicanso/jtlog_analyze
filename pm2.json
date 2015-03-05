@@ -1,0 +1,14 @@
+{
+  "name" : "jtlog_analyze",
+  "instances" : 1,
+  "merge_logs" : true,
+  "max_memory_restart" : "200M",
+  "script" : "app.js",
+  "exec_mode" : "fork",
+  "log_file" : "/vicanso/pm2/log/jtlog_analyze.log",
+  "error_file" : "/vicanso/pm2/log/jtlog_analyze-error.log",
+  "out_file" : "/vicanso/pm2/log/jtlog_analyze-out.log",
+  "env" : {
+    "NODE_ENV" : "production"
+  }
+}

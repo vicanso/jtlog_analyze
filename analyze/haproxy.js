@@ -1,10 +1,9 @@
-// '<134>Feb  9 13:16:41 [HAPROXY][3241]: 127.0.0.1:51906 [09/Feb/2015:13:16:41.918] 80port varnish/<NOSRV> 0/-1/-1/-1/0 503 212 vicanso=110ec58a-a0f2-4ac4-8393-c866d813b8d1 - SC-- 0/0/0/0/0 0/0 {localhost|http://localhost:100} "GET / HTTP/1.1"\n'
+'use strict';
 
-var client = require('../lib/client');
+var stats = require('../lib/stats');
 
 var moment = require('moment');
 module.exports = function(msg){
-  console.dir(msg);
   // 1: harpoxy pid
   // 2: client ip
   // 3: accept date
@@ -25,7 +24,7 @@ module.exports = function(msg){
   var reg = /[\s\S]+\[HAPROXY\]\[(\d+?)\]\:\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):\d{1,5}\s\[(\S+?)\]\s(\S+?)\s(\S+?)\/(\S+?)\s(\S+?)\/(\S+?)\/(\S+?)\/(\S+?)\/(\S+?)\s(\d+?)\s(\d+?)\s(\S+?)\s[\s\S]*?(\S+?)\/(\S+?)\/(\S+?)\/(\S+?)\/(\S+?)\s(\S+?)\/(\S+?)\s\{([\s\S]*?)\|([\s\S]*?)\|([\s\S]*?)\}\s\"(\S+?)\s(\S+?)\s/gi;
   var result = reg.exec(msg);
   if(result && result.length > 25){
-    var uuidPrefix = 'vicanso=';
+    var uuidPrefix = 'jtuuid=';
     var uuid = '';
     if(result[14].indexOf(uuidPrefix) !== -1){
       uuid = result[14].substring(uuidPrefix.length);
@@ -58,6 +57,6 @@ module.exports = function(msg){
       method : result[25],
       url : result[26]
     };
-    console.dir(data);
+    console.info('haproxy:%j', data);
   }
 };
